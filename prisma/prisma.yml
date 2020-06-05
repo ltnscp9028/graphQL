@@ -1,0 +1,16 @@
+# 사용할 Prisma API의 HTTP 엔드포인드
+#endpoint: ''
+endpoint: https://us1.prisma.sh/ltnscp9028-6721b7/project/dev
+
+
+# 데이터 모델을 포함하고 있는 파일의 이름
+datamodel: datamodel.prisma
+
+# 생성될 Prisma Client의 언어와 생성 위치 지정
+generate:
+  - generator: javascript-client
+    output: ../src/generated/prisma-client
+
+hooks:
+  post-deploy:
+    - prisma generate

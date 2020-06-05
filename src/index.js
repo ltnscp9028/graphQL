@@ -1,53 +1,28 @@
-const {GraphQLServer} = require('graphql-yoga');
+const { GraphQLServer } = require('graphql-yoga');
+const { prisma } = require('./generated/prisma-client');
+let links = [];
 
-let links =[];
-
-let idCount  =links.length;
+let idCount = links.length;
 
 const resolvers = {
     Query: {
-        info: () => `Hello APi!!`,
-        feed: () =>links,
-        link: (_,args) => {
-            for(let i=0;i<links.length;i++)
-                if(args.id == links[i].id)return links[i]
-        }
-    },  
-
+        info: () => `This is the API of a Hackernews Clone`,
+        feed: (root, args, context, info) => {
+            return context.prisma.links()
+        },
+    },
     Mutation: {
-        post:(parent,args) => {
-            const link = {
-                id: `link-${idCount++}`,
-                description:args.description,
-                url:args.url,
-            }
-            links.push(link);
-            return link;
+        post: (root, args, context) => {
+            return context.prisma.createLink({
+                url: args.url,
+                description: args.description,
+            })
         },
-        
-        updateLink:(parent,args) => {
-            for(let i=0;i<links.length;i++)
-                if(args.id==links[i].id){
-                    links[i].url = args.url;
-                    links[i].description = args.description;
-                    return links[i];
-                }
-        },
-        deleteLink: (parent,args) => {
-            let arr = [];
-            let delLink;
-            for(i=0;i<links.length;i++){
-                if(links[i].id==args.id)delLink=links[i];
-                else arr.push(links[i]);
-            }
-            links = arr;
-            return delLink;
-        }
     },
 }
-
 const server = new GraphQLServer({
     typeDefs: './src/schema.graphql',
     resolvers,
+    context: { prisma }
 })
-server.start(()=>console.log('http://localhost:4000 server'));
+server.start(() => console.log('http://localhost:4000 server'));

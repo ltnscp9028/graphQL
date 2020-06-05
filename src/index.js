@@ -1,3 +1,4 @@
+const Vote = require('./resolvers/Vote');
 const Subscription = require('./resolvers/Subscription')
 const { GraphQLServer } = require('graphql-yoga');
 const { prisma } = require('./generated/prisma-client');
@@ -11,7 +12,9 @@ const resolvers = {
     Mutation,
     Subscription,
     User,
-    Link
+    Link,
+    Vote,
+
 }
 
 const server = new GraphQLServer({
